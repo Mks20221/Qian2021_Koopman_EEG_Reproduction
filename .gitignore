@@ -1,0 +1,21 @@
+# Runtime outputs and experiment artifacts
+outputs/**
+!outputs/**/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# Editors and operating system
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+
+# Local phase archives
+Qian2021_Koopman_EEG_Reproduction_Phase*.zip

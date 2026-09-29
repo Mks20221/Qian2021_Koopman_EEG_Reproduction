@@ -1,0 +1,281 @@
+{
+  "project": {
+    "name": "Qian2021_Koopman_EEG_Reproduction",
+    "phase": 4,
+    "paper": {
+      "authors": "Shaodi Qian; Chun-An Chou",
+      "title": "A Koopman-operator-theoretical approach for anomaly recognition and detection of multi-variate EEG system",
+      "year": 2021,
+      "journal": "Biomedical Signal Processing and Control",
+      "volume": 69,
+      "article_number": "102911",
+      "doi": "10.1016/j.bspc.2021.102911"
+    }
+  },
+  "data": {
+    "bonn_root": "E:\\Python\\DATA\\Bonn",
+    "dataset": "Bonn",
+    "classes": {
+      "interictal": {
+        "folder": "D_F",
+        "filename_prefix": "F",
+        "label": "D",
+        "source_state": "interictal",
+        "segments": 100
+      },
+      "ictal": {
+        "folder": "E_S",
+        "filename_prefix": "S",
+        "label": "E",
+        "source_state": "ictal",
+        "segments": 100
+      }
+    },
+    "confirmed_directory_layout": {
+      "A_Z": 100,
+      "B_O": 100,
+      "C_N": 100,
+      "D_F": 100,
+      "E_S": 100
+    },
+    "label_mapping_mode": "fixed_config_mapping",
+    "auto_guess_labels": false,
+    "selected_total_segments": 200,
+    "expected_segments_per_class": 100,
+    "expected_samples_per_segment": 4097,
+    "sampling_rate_hz": 173.61,
+    "segment_is_sample": true,
+    "preprocessing": {
+      "use_signal_as_stored": true,
+      "band_decomposition": false,
+      "per_segment_zscore": false
+    }
+  },
+  "reproducibility": {
+    "random_seed": 2021,
+    "figure_sample_seed": 2021
+  },
+  "lorenz": {
+    "sampling_rate_hz": 100.0,
+    "sampling_rate_provenance": "PAPER_FAITHFUL: paper Lorenz simulation sampling rate",
+    "sample_interval_s": 0.01,
+    "integration_duration_per_segment_s": 50.0,
+    "integration_duration_provenance": "IMPLEMENTATION_CHOICE: fixed analysis segment length, not a claim about the exact paper duration",
+    "burn_in_duration_s": 20.0,
+    "burn_in_provenance": "IMPLEMENTATION_CHOICE: discard the initial L1 transient before the analyzed sequence",
+    "initial_condition": [1.0, 1.0, 1.0],
+    "initial_condition_provenance": "IMPLEMENTATION_CHOICE",
+    "solver": "scipy.solve_ivp RK45",
+    "solver_rtol": 1e-9,
+    "solver_atol": 1e-12,
+    "max_step_s": 0.01,
+    "L1": {
+      "sigma": 10.0,
+      "rho": 28.0,
+      "beta": 2.6666666666666665,
+      "provenance": "PAPER_FAITHFUL: classical Lorenz parameters specified for this reproduction"
+    },
+    "L2": {
+      "sigma": 10.0,
+      "rho": 28.0,
+      "beta": 1.3333333333333333,
+      "provenance": "PAPER_FAITHFUL: beta changes from 8/3 in L1 to 4/3 in L2"
+    },
+    "delay_dim_candidates": [16, 32, 64, 128],
+    "delay_dim_candidate_provenance": "PAPER_UNSPECIFIED: pre-specified implementation candidates; paper supports low/high comparison but does not confirm fixed values",
+    "transition_delay_dim": 64,
+    "transition_svd_rank": 15,
+    "transition_coordinate_source": "V",
+    "transition_distance_p": 20,
+    "time_anchor": "center",
+    "time_anchor_provenance": "IMPLEMENTATION_CHOICE: Hankel-column time is the center of its delay window",
+    "short_horizon_samples": 100,
+    "short_horizon_stride_samples": 100,
+    "sequence": ["L1", "L2", "L1"]
+  },
+  "koopman": {
+    "delay_dim": 64,
+    "delay_dim_provenance": "PAPER_UNSPECIFIED: implementation choice; 64 is not a paper parameter",
+    "bonn_delay_dim_ablation": [16, 32, 64, 128],
+    "svd_rank": 15,
+    "svd_rank_provenance": "PAPER_FAITHFUL: paper discusses rank 15-20 truncation as potentially sufficient",
+    "koopman_coordinate_count": 15,
+    "koopman_coordinate_count_provenance": "PAPER_FAITHFUL: authors later retain top 15 coordinates with the largest eigenvalues",
+    "svd_rank_to_koopman_coordinate_count_relation": "PAPER_UNSPECIFIED: do not assume these counts or selection operations are numerically equivalent",
+    "coordinate_selection_criterion": "largest_eigenvalue_associated_coordinates",
+    "coordinate_selection_numeric_implementation": "PAPER_UNSPECIFIED: exact mapping from eigenvalues to coordinate ordering is unresolved; do not substitute largest singular values",
+    "coordinate_source": "V",
+    "coordinate_source_provenance": "PAPER_UNSPECIFIED: first implementation candidate only; paper text does not establish y=V, y=Sigma V*, or y=U",
+    "coordinate_source_options": ["V", "SigmaV"],
+    "snapshot_fit": "A = Y2 @ pinv(Y1)",
+    "record_linearity_error": true,
+    "record_eigenvalue_magnitude_and_phase": true,
+    "record_continuous_time_spectrum_when_dt_known": true
+  },
+  "deviation": {
+    "implementation_status": "phase1_candidate_functions; phase2 Lorenz compares fixed deviation candidates",
+    "primary_method": null,
+    "candidate_methods": ["paper_literal_finite_p", "chebyshev"],
+    "finite_p_candidates": [10, 20, 50],
+    "weight_mode_candidate": "abs",
+    "weight_mode_provenance": "IMPLEMENTATION_CHOICE / PAPER_UNSPECIFIED_NUMERICAL_HANDLING",
+    "reference_mode": "origin",
+    "reference_mode_provenance": "PAPER_MOTIVATED_BUT_IMPLEMENTATION_UNSPECIFIED",
+    "reference_mode_options": [
+      "origin",
+      "trajectory_centroid",
+      "training_reference_centroid"
+    ],
+    "reference_alternatives_usage": "sensitivity_analysis_only; never select using test-set results",
+    "also_compute_chebyshev": true
+  },
+  "bonn_smoke": {
+    "scope": "BONN_ADAPTATION: process only a seeded 5 D + 5 E smoke subset; audit raw data in all discovered D/E files",
+    "samples_per_class": 5,
+    "random_seed": 2021,
+    "delay_dim": 64,
+    "delay_dim_provenance": "PAPER_UNSPECIFIED implementation choice fixed before smoke run",
+    "svd_rank": 15,
+    "svd_rank_provenance": "PAPER_FAITHFUL rank-15 paper-like candidate",
+    "koopman_coordinate_count": 15,
+    "coordinate_count_relation_to_rank": "kept separately documented; both fixed to 15 for this smoke protocol",
+    "coordinate_source": "V",
+    "coordinate_source_provenance": "PAPER_UNSPECIFIED first implementation candidate; fixed by Phase 3 protocol",
+    "reference_mode": "origin",
+    "reference_mode_provenance": "PAPER_MOTIVATED_BUT_IMPLEMENTATION_UNSPECIFIED",
+    "primary_deviation": "chebyshev",
+    "secondary_deviation": "paper_literal_finite_p",
+    "finite_p": 20,
+    "finite_p_weight_mode": "abs",
+    "finite_p_weight_provenance": "IMPLEMENTATION_CHOICE / PAPER_UNSPECIFIED_NUMERICAL_HANDLING",
+    "sampling_rate_hz": 173.61,
+    "expected_samples_per_segment": 4097,
+    "time_anchor": "center_of_hankel_window",
+    "minimum_success_count_for_smoke_pass": 8,
+    "minimum_success_per_class_for_smoke_pass": 4,
+    "frequency_band_decomposition": false,
+    "classifier_or_cross_validation": false,
+    "entropy_bins": 64,
+    "entropy_estimator": "fixed histogram bin count with per-signal observed range; implementation choice",
+    "power_definition": "mean_square",
+    "write_failure_reason_and_continue": true
+  },
+  "bonn_full": {
+    "scope": "BONN_ADAPTATION: all 100 D + 100 E segments; segment-level validation only",
+    "delay_dim": 64,
+    "svd_rank": 15,
+    "koopman_coordinate_count": 15,
+    "coordinate_source": "V",
+    "reference_mode": "origin",
+    "primary_deviation": "chebyshev",
+    "secondary_deviation": "paper_literal_finite_p",
+    "finite_p": 20,
+    "finite_p_weight_mode": "abs",
+    "sampling_rate_hz": 173.61,
+    "entropy_bins": 64,
+    "feature_sets": {
+      "KOOPMAN_PRIMARY": ["Dmax_cheb", "Dmin_cheb", "Dmean_cheb", "Dstd_cheb", "Dpower_cheb", "Dentropy_cheb"],
+      "RAW_BASELINE": ["raw_mean", "raw_std", "raw_power", "raw_entropy"],
+      "KOOPMAN_PLUS_RAW": ["Dmax_cheb", "Dmin_cheb", "Dmean_cheb", "Dstd_cheb", "Dpower_cheb", "Dentropy_cheb", "raw_mean", "raw_std", "raw_power", "raw_entropy"]
+    },
+    "scale_invariance_control": {
+      "sample_ids": ["F094", "S026"],
+      "scale_factor": 10.0,
+      "features": ["Dmax_cheb", "Dmin_cheb", "Dmean_cheb", "Dstd_cheb", "Dpower_cheb", "Dentropy_cheb"]
+    },
+    "cv": {
+      "method": "RepeatedStratifiedKFold",
+      "n_splits": 5,
+      "n_repeats": 5,
+      "random_seed": 2021,
+      "same_splits_for_all_models_and_feature_sets": true
+    },
+    "classifiers": {
+      "LogisticRegression": {
+        "C": 1.0,
+        "solver": "lbfgs",
+        "max_iter": 2000,
+        "class_weight": null,
+        "random_state": 2021,
+        "scaler": "StandardScaler fitted inside training fold"
+      },
+      "SVM": {
+        "kernel": "rbf",
+        "C": 1.0,
+        "gamma": "scale",
+        "probability": true,
+        "class_weight": null,
+        "random_state": 2021,
+        "scaler": "StandardScaler fitted inside training fold"
+      },
+      "RUSBoost": {
+        "estimator": "DecisionTreeClassifier(max_depth=1, random_state=2021)",
+        "n_estimators": 50,
+        "learning_rate": 1.0,
+        "algorithm": "SAMME.R",
+        "sampling_strategy": "auto",
+        "replacement": false,
+        "random_state": 2021,
+        "scaler": "none"
+      }
+    },
+    "effect_size": "Cliff's delta, E minus D",
+    "multiple_comparison_correction": "Holm, separately over six Koopman primary and four raw baseline tests",
+    "cross_subject_claims_allowed": false,
+    "patient_independent_claims_allowed": false
+  },
+  "features": {
+    "koopman": ["D_max", "D_min", "D_mean", "D_std", "D_power", "D_entropy"],
+    "raw_baseline": ["raw_mean", "raw_std", "raw_power", "raw_entropy"],
+    "power_definition": "mean_square",
+    "entropy_estimator": "fixed_histogram_shannon",
+    "entropy_histogram_bins": 64,
+    "entropy_log_base": "e"
+  },
+  "evaluation": {
+    "cross_validation": "RepeatedStratifiedKFold",
+    "n_splits": 5,
+    "n_repeats": 5,
+    "random_seed": 2021,
+    "validation_unit": "segment_level",
+    "patient_identity_available": "not established by the confirmed file layout",
+    "generalization_claims_allowed": ["segment_level D/E discrimination on these 200 segments"],
+    "generalization_claims_forbidden_without_reliable_patient_identity": [
+      "cross-subject",
+      "cross-patient",
+      "LOSO",
+      "patient-independent generalization"
+    ],
+    "fit_scaler_inside_training_fold": true,
+    "metrics": [
+      "accuracy",
+      "balanced_accuracy",
+      "sensitivity",
+      "specificity",
+      "F1",
+      "ROC_AUC"
+    ],
+    "classifiers": {
+      "logistic_regression": {
+        "max_iter": 2000,
+        "random_state": 2021
+      },
+      "svm": {
+        "kernel": "rbf",
+        "probability": true,
+        "random_state": 2021
+      },
+      "rusboost": {
+        "n_estimators": 50,
+        "random_state": 2021
+      }
+    },
+    "statistical_test": "two-sided Mann-Whitney U; Holm correction separately for six Koopman and four raw features",
+    "effect_size": "Cliff's delta, E minus D"
+  },
+  "provenance": {
+    "unconfirmed_parameters_must_remain_configurable": true,
+    "do_not_tune_using_test_performance": true,
+    "paper_parameter_claims_require_source_confirmation": true
+  }
+}
